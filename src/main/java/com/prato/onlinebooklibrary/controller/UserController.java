@@ -1,7 +1,7 @@
 package com.prato.onlinebooklibrary.controller;
 
 import com.prato.onlinebooklibrary.entity.User;
-import com.prato.onlinebooklibrary.service.UserService;
+import com.prato.onlinebooklibrary.service.UserOnlyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserService userService;
+    private UserOnlyService userService;
     @GetMapping("/all")
     public ResponseEntity<List<User>> registerUser(){
         return new ResponseEntity<>(userService.getAllUser(), HttpStatus.OK);
