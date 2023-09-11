@@ -1,17 +1,17 @@
 package com.prato.onlinebooklibrary.model;
 
 public class ReviewDto {
-    private float rating;
+    private Float rating;
     private String comment;
 
     public void setComment(String comment) {
         this.comment = comment;
     }
-    public void setRating(float rating){
+    public void setRating(Float rating){
         this.rating=rating;
     }
 
-    public float getRating() {
+    public Float getRating() {
         return rating;
     }
 

@@ -1,21 +1,18 @@
 package com.prato.onlinebooklibrary.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
-@Table(name="Review")
+@Table(name = "Reserve")
 @Component
-public class Review {
+public class Reserve {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "review_id")
+    @Column(name = "reserve_id")
     private Integer reviewId;
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
@@ -23,22 +20,25 @@ public class Review {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "book_id")
     private Book book;
-    @Column(name = "rating", nullable = false)
-//    @Digits(integer = 1, fraction = 1)
-    @Min(value = 1)
-    @Max(value = 5)
-    private Float rating;
-    @Column(name = "comment")
-    private String comment;
-    public Review(){
+    @Column(name = "reservation_date")
+    private Date reservationDate;
+    @Column(name = "status")
+    private String status;
+    @PrePersist
+    public void prePersist() {
+        LocalDate currentDate = LocalDate.now();
+        reservationDate = Date.valueOf(currentDate);
+        status = "reserved";
+    }
+    public Reserve(){
 
     }
 
-    public Review(User user, Book book, Float rating, String comment) {
+    public Reserve(User user, Book book, Date reservationDate, String status) {
         this.user = user;
         this.book = book;
-        this.rating = rating;
-        this.comment = comment;
+        this.reservationDate = reservationDate;
+        this.status = status;
     }
 
     public Integer getReviewId() {
@@ -65,19 +65,19 @@ public class Review {
         this.book = book;
     }
 
-    public Float getRating() {
-        return rating;
+    public Date getReservationDate() {
+        return reservationDate;
     }
 
-    public void setRating(float rating) {
-        this.rating = rating;
+    public void setReservationDate(Date reservationDate) {
+        this.reservationDate = reservationDate;
     }
 
-    public String getComment() {
-        return comment;
+    public String getStatus() {
+        return status;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

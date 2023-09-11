@@ -8,23 +8,25 @@ import java.util.Calendar;
 //import java.util.Date;
 import java.sql.Date;
 @Entity
-@Table(name="borrowed")
+@Table(name="Borrowed")
 @Component
 public class Borrowed {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "borrowed_id")
     private Integer borrowedId;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "book_id")
     private Book book;
     @Column(name = "borrowed_date")
     private Date borrowedDate;
     @Column(name = "due_date")
     private Date dueDate;
+    @Column(name = "return_date")
+    private Date returnDate;
     @Column(name = "status")
     private String status;
     @PrePersist
@@ -45,6 +47,14 @@ public class Borrowed {
         this.borrowedDate = borrowedDate;
         this.dueDate = dueDate;
         this.status = status;
+    }
+
+    public Date getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(Date returnDate) {
+        this.returnDate = returnDate;
     }
 
     public Integer getBorrowedId() {
