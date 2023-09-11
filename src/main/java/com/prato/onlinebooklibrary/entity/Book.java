@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import org.springframework.stereotype.Component;
 
 @Entity
-@Table(name="book")
+@Table(name="Book")
 @Component
 public class Book {
     @Id
@@ -21,8 +21,14 @@ public class Book {
     @Column(name = "isbn", nullable = false, unique = true)
     @NotEmpty
     private String isbn;
-    @Column(name = "available")
-    private boolean available;
+    public enum Status {
+        Available,
+        Borrowed,
+        Deleted
+    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status;
     public Book(){
 
     }
@@ -37,7 +43,7 @@ public class Book {
         return bookId;
     }
 
-    public void setBookId(Integer book_id) {
+    public void setBookId(Integer bookId) {
         this.bookId = bookId;
     }
 
@@ -65,11 +71,11 @@ public class Book {
         this.isbn = isbn;
     }
 
-    public boolean isAvailable() {
-        return available;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

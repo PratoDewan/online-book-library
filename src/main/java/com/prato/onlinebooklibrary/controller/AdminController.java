@@ -3,6 +3,7 @@ package com.prato.onlinebooklibrary.controller;
 import com.prato.onlinebooklibrary.entity.Book;
 import com.prato.onlinebooklibrary.entity.Borrowed;
 import com.prato.onlinebooklibrary.entity.User;
+import com.prato.onlinebooklibrary.model.BookDto;
 import com.prato.onlinebooklibrary.service.AdminService;
 import com.prato.onlinebooklibrary.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +30,11 @@ public class AdminController {
         return new ResponseEntity<>(adminService.getUserById(id), HttpStatus.OK);
     }
     @GetMapping("/{userId}/books")
-    public ResponseEntity<Set<Book>> findBorrowedBooksByUser(@PathVariable int userId){
+    public ResponseEntity<Set<BookDto>> findBorrowedBooksByUser(@PathVariable int userId){
         return new ResponseEntity<>(userService.borrowedBooksByUser(userId),HttpStatus.OK);
     }
     @GetMapping("/{userId}/borrowed-books")
-    public ResponseEntity<Set<Book>> findCurrentBorrowedBooksByUser(@PathVariable int userId){
+    public ResponseEntity<Set<BookDto>> findCurrentBorrowedBooksByUser(@PathVariable int userId){
         return new ResponseEntity<>(userService.currentlyBorrowedBooks(userId),HttpStatus.OK);
     }
     @GetMapping("/all")

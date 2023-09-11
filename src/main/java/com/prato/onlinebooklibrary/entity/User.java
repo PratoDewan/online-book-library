@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import org.springframework.stereotype.Component;
 
 @Entity
-@Table(name="user")
+@Table(name="User")
 @Component
 public class User {
     @Id

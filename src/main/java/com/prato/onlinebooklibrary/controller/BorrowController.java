@@ -21,4 +21,14 @@ public class BorrowController {
         userService.returnBook(userId,bookId);
         return new ResponseEntity<>("Book returned successfully!", HttpStatus.OK);
     }
+    @PostMapping("/reserve")
+    public ResponseEntity<String> reserveBook(@PathVariable int bookId, @RequestParam int userId) {
+        userService.createReservation(userId, bookId);
+        return new ResponseEntity<>("Book reserved successfully!", HttpStatus.OK);
+    }
+    @PutMapping("/cancel-reservation")
+    public ResponseEntity<String> cancelBookReservation(@PathVariable int bookId, @RequestParam int userId) {
+        userService.cancelReservation(userId, bookId);
+        return new ResponseEntity<>("Book reservation cancelled successfully!", HttpStatus.OK);
+    }
 }

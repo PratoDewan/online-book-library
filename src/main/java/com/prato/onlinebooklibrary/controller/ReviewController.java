@@ -26,4 +26,20 @@ public class ReviewController {
     public ResponseEntity<List<Review>> getReviewByBookId(@PathVariable int bookId){
         return new ResponseEntity<>(userService.getReviewsByBookId(bookId),HttpStatus.OK);
     }
+    @PutMapping("/{reviewId}/update")
+    public ResponseEntity<String> updateReview(@RequestBody ReviewDto reviewDto,
+                                               @PathVariable int bookId,
+                                               @PathVariable int reviewId,
+                                               @RequestParam int userId){
+        userService.updateReview(reviewDto,userId,bookId,reviewId);
+        return new ResponseEntity<>("Review updated successfully!", HttpStatus.OK);
+    }
+    @DeleteMapping("/{reviewId}/delete")
+    public ResponseEntity<String> deleteReview(@RequestBody ReviewDto reviewDto,
+                                               @PathVariable int bookId,
+                                               @PathVariable int reviewId,
+                                               @RequestParam int userId){
+        userService.deleteReview(reviewDto,userId,bookId,reviewId);
+        return new ResponseEntity<>("Review deleted successfully!", HttpStatus.OK);
+    }
 }
