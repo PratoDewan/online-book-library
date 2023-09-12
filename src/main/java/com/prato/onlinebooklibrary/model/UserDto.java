@@ -1,60 +1,34 @@
-package com.prato.onlinebooklibrary.entity;
+package com.prato.onlinebooklibrary.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import org.springframework.stereotype.Component;
+import com.prato.onlinebooklibrary.entity.User;
 
-@Entity
-@Table(name="User")
-@Component
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+public class UserDto {
     private Integer userId;
-    @Column(name = "first_name",nullable = false)
-    @NotEmpty
     private String firstName;
-    @Column(name = "last_name",nullable = false)
-    @NotEmpty
     private String lastName;
-    @Column(name = "email", nullable = false, unique = true)
-    @NotEmpty
-    @Email
     private String email;
-    @Column(name = "password", nullable = false)
-    @NotEmpty
     private String password;
-    @Column(name = "address", nullable = false)
-    @NotEmpty
     private String address;
-    public enum Role {
-        CUSTOMER,
-        ADMIN
-    }
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role;
-    public User(){
+    private User.Role role;
+    public  UserDto(){
 
     }
 
-    public User(String firstName, String lastName, String email, String password, String address, Role role) {
+    public UserDto(String firstName, String lastName, String email, String password, String address, User.Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.address = address;
-        this.role=role;
+        this.role = role;
     }
 
     public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer user_id) {
-        this.userId = user_id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getFirstName() {
@@ -97,11 +71,11 @@ public class User {
         this.address = address;
     }
 
-    public Role getRole() {
+    public User.Role getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(User.Role role) {
         this.role = role;
     }
 }

@@ -1,11 +1,10 @@
 package com.prato.onlinebooklibrary.controller;
 
-import com.prato.onlinebooklibrary.entity.Book;
 import com.prato.onlinebooklibrary.entity.Borrowed;
 import com.prato.onlinebooklibrary.entity.User;
 import com.prato.onlinebooklibrary.model.BookDto;
 import com.prato.onlinebooklibrary.service.AdminService;
-import com.prato.onlinebooklibrary.service.UserService;
+import com.prato.onlinebooklibrary.service.UserOnlyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +23,10 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
     @Autowired
-    private UserService userService;
-    @GetMapping("/{id}")
-    public ResponseEntity<Optional<User>> findById(@PathVariable int id){
-        return new ResponseEntity<>(adminService.getUserById(id), HttpStatus.OK);
+    private UserOnlyService userService;
+    @GetMapping("/{userId}")
+    public ResponseEntity<Optional<User>> findById(@PathVariable int userId){
+        return new ResponseEntity<>(adminService.getUserById(userId), HttpStatus.OK);
     }
     @GetMapping("/{userId}/books")
     public ResponseEntity<Set<BookDto>> findBorrowedBooksByUser(@PathVariable int userId){

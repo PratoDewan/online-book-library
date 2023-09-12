@@ -1,6 +1,6 @@
 package com.prato.onlinebooklibrary.controller;
 
-import com.prato.onlinebooklibrary.service.UserService;
+import com.prato.onlinebooklibrary.service.UserOnlyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/books/{bookId}")
 public class BorrowController {
     @Autowired
-    private UserService userService;
+    private UserOnlyService userService;
     @PostMapping("/borrow")
     public ResponseEntity<String> borrowBook(@PathVariable int bookId,@RequestParam int userId){
         userService.borrowBook(userId, bookId);
