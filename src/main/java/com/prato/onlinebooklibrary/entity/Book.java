@@ -33,7 +33,8 @@ public class Book {
 
     }
 
-    public Book(String title, String author, String isbn) {
+    public Book(Integer bookId,String title, String author, String isbn) {
+        this.bookId = bookId;
         this.title = title;
         this.author = author;
         this.isbn = isbn;

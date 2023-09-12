@@ -1,6 +1,7 @@
 package com.prato.onlinebooklibrary.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
@@ -22,23 +23,39 @@ public class Reserve {
     private Book book;
     @Column(name = "reservation_date")
     private Date reservationDate;
-    @Column(name = "status")
-    private String status;
+    public enum ReservationStatus{
+        Reserved,
+        Cancelled
+    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "reservation_status")
+    private ReservationStatus reservationStatus;
+    public enum BookStatus{
+        Available,
+        Borrowed
+    }
+    @Getter
+    @Enumerated(EnumType.STRING)
+    @Column(name = "book_status")
+    private BookStatus bookStatus;
     @PrePersist
     public void prePersist() {
         LocalDate currentDate = LocalDate.now();
         reservationDate = Date.valueOf(currentDate);
-        status = "reserved";
+        reservationStatus = ReservationStatus.Reserved;
     }
     public Reserve(){
 
     }
 
-    public Reserve(User user, Book book, Date reservationDate, String status) {
+    public Reserve(User user, Book book, Date reservationDate,
+                   ReservationStatus reservationStatus,
+                   BookStatus bookStatus) {
         this.user = user;
         this.book = book;
         this.reservationDate = reservationDate;
-        this.status = status;
+        this.reservationStatus = reservationStatus;
+        this.bookStatus = bookStatus;
     }
 
     public Integer getReviewId() {
@@ -73,11 +90,15 @@ public class Reserve {
         this.reservationDate = reservationDate;
     }
 
-    public String getStatus() {
-        return status;
+    public ReservationStatus getReservationStatus() {
+        return reservationStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setReservationStatus(ReservationStatus reservationStatus) {
+        this.reservationStatus = reservationStatus;
+    }
+
+    public void setBookStatus(BookStatus bookStatus) {
+        this.bookStatus = bookStatus;
     }
 }

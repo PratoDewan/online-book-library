@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prato.onlinebooklibrary.SpringApplicationContext;
 import com.prato.onlinebooklibrary.model.UserDto;
 import com.prato.onlinebooklibrary.model.UserLoginRequestModel;
-import com.prato.onlinebooklibrary.service.UserOnlyService;
-import com.prato.onlinebooklibrary.service.UserService;
+import com.prato.onlinebooklibrary.service.UserAuthService;
 import com.prato.onlinebooklibrary.utils.JWTUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -55,7 +54,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         String user = ((User)authResult.getPrincipal()).getUsername();
         String accessToken = JWTUtils.generateToken(user);
-        UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
+        UserAuthService userService = (UserAuthService) SpringApplicationContext.getBean("userAuthServiceImpl");
         UserDto userDto = userService.getUser(user);
 //        response.addHeader("userId",userDto.getUserId());
 //        response.addHeader(AppConstants.HEADER_STRING,AppConstants.TOKEN_PREFIX+accessToken);

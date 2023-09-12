@@ -1,9 +1,6 @@
 package com.prato.onlinebooklibrary.controller;
 
-import com.prato.onlinebooklibrary.exception.EmptyFieldException;
-import com.prato.onlinebooklibrary.exception.EmptyResultException;
-import com.prato.onlinebooklibrary.exception.IntegrityException;
-import com.prato.onlinebooklibrary.exception.InvalidQueryException;
+import com.prato.onlinebooklibrary.exception.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -47,5 +44,9 @@ public class GlobalController {
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex){
         return new ResponseEntity<>(new InvalidQueryException(ex.getMessage()).getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler({IllegalOperationException.class})
+    public ResponseEntity<?> handleIllegalOperationException(IllegalOperationException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

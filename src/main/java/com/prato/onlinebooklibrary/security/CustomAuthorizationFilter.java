@@ -41,7 +41,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 List<GrantedAuthority> authorities = new ArrayList<>();
                 GrantedAuthority grantedAuthority= new SimpleGrantedAuthority("ROLE_"+user.get().getRole().name());
                 authorities.add(grantedAuthority);
-                return new UsernamePasswordAuthenticationToken(user, null, authorities);
+                return new UsernamePasswordAuthenticationToken(email, null, authorities);
             }
             return null;
         }

@@ -1,19 +1,23 @@
 package com.prato.onlinebooklibrary.model;
 
-public class BookDto {
+import com.prato.onlinebooklibrary.entity.Book;
+
+public class BookAdminResponseDto {
     private Integer bookId;
     private String title;
     private String author;
     private String isbn;
-    public BookDto(){
+    private Book.Status status;
+    public BookAdminResponseDto(){
 
     }
 
-    public BookDto(Integer bookId, String title, String author, String isbn) {
+    public BookAdminResponseDto(Integer bookId, String title, String author, String isbn, Book.Status status) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
         this.isbn = isbn;
+        this.status = status;
     }
 
     public Integer getBookId() {
@@ -46,5 +50,13 @@ public class BookDto {
 
     public void setIsbn(String isbn) {
         this.isbn = isbn;
+    }
+
+    public Book.Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Book.Status status) {
+        this.status = status;
     }
 }
