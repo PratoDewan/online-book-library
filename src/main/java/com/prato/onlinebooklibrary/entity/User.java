@@ -29,16 +29,24 @@ public class User {
     @Column(name = "address", nullable = false)
     @NotEmpty
     private String address;
+    public enum Role {
+        CUSTOMER,
+        ADMIN
+    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
     public User(){
 
     }
 
-    public User(String firstName, String lastName, String email, String password, String address) {
+    public User(String firstName, String lastName, String email, String password, String address, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.address = address;
+        this.role=role;
     }
 
     public Integer getUserId() {
@@ -87,5 +95,13 @@ public class User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

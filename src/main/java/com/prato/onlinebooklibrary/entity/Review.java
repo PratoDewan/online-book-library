@@ -24,7 +24,6 @@ public class Review {
     @JoinColumn(name = "book_id")
     private Book book;
     @Column(name = "rating", nullable = false)
-//    @Digits(integer = 1, fraction = 1)
     @Min(value = 1)
     @Max(value = 5)
     private Float rating;

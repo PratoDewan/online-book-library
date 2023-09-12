@@ -1,6 +1,9 @@
 package com.prato.onlinebooklibrary.security;
 
+import com.prato.onlinebooklibrary.SpringApplicationContext;
 import com.prato.onlinebooklibrary.constants.AppConstants;
+import com.prato.onlinebooklibrary.entity.User;
+import com.prato.onlinebooklibrary.repository.UserRepository;
 import com.prato.onlinebooklibrary.utils.JWTUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,9 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
@@ -33,30 +34,17 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private UsernamePasswordAuthenticationToken getAuthenticationToken(String header) {
         if(header != null) {
             String token = header.replace(AppConstants.TOKEN_PREFIX, "");
-            String user = JWTUtils.hasTokenExpired(token) ? null : JWTUtils.extractUser(token);
-            if (user != null) {
-
-                Set<RoleEntity> roles = fetchRolesForUser(user);
-
-                List<GrantedAuthority> authorities = roles.stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_"+role.getName().toUpperCase()))
-                        .collect(Collectors.toList());
-
+            String email = JWTUtils.hasTokenExpired(token) ? null : JWTUtils.extractUser(token);
+            if (email != null) {
+                UserRepository userRepository = (UserRepository) SpringApplicationContext.getBean("userRepository");
+                Optional<User> user = userRepository.findByEmail(email);
+                List<GrantedAuthority> authorities = new ArrayList<>();
+                GrantedAuthority grantedAuthority= new SimpleGrantedAuthority("ROLE_"+user.get().getRole().name());
+                authorities.add(grantedAuthority);
                 return new UsernamePasswordAuthenticationToken(user, null, authorities);
             }
             return null;
         }
         return null;
-    }
-    private Set<RoleEntity> fetchRolesForUser(String userEmail) {
-        System.out.println(userEmail);
-        UserRepository userRepository = (UserRepository) SpringApplicationContext.getBean("userRepository");
-        UserEntity userEntity = userRepository.findByEmail(userEmail).get();
-
-        if (userEntity==null) {
-            return Collections.emptySet();
-        } else {
-            return userEntity.getRoles();
-        }
     }
 }

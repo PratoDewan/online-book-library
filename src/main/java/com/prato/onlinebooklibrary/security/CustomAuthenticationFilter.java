@@ -29,7 +29,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     private final AuthenticationManager authenticationManager;
     public CustomAuthenticationFilter(AuthenticationManager authenticationManager){
         this.authenticationManager=authenticationManager;
-//        setFilterProcessesUrl("/user-login");
+        setFilterProcessesUrl("/user/login");
     }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {

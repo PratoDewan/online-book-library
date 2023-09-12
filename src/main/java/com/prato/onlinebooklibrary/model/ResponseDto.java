@@ -1,34 +1,24 @@
 package com.prato.onlinebooklibrary.model;
 
 public class ResponseDto {
-    private long id;
-    private String userId;
+    private Integer userId;
     private String email;
     private String AccessToken;
     public ResponseDto(){
 
     }
 
-    public ResponseDto(long id, String userId, String email, String accessToken) {
-        this.id = id;
+    public ResponseDto(Integer userId, String email, String accessToken) {
         this.userId = userId;
         this.email = email;
         AccessToken = accessToken;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

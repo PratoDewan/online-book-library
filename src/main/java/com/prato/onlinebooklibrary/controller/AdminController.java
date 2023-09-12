@@ -24,9 +24,9 @@ public class AdminController {
     private AdminService adminService;
     @Autowired
     private UserOnlyService userService;
-    @GetMapping("/{id}")
-    public ResponseEntity<Optional<User>> findById(@PathVariable int id){
-        return new ResponseEntity<>(adminService.getUserById(id), HttpStatus.OK);
+    @GetMapping("/{userId}")
+    public ResponseEntity<Optional<User>> findById(@PathVariable int userId){
+        return new ResponseEntity<>(adminService.getUserById(userId), HttpStatus.OK);
     }
     @GetMapping("/{userId}/books")
     public ResponseEntity<Set<BookDto>> findBorrowedBooksByUser(@PathVariable int userId){

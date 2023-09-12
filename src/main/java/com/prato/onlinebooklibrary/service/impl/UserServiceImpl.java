@@ -10,15 +10,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+@Service
 public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private UserRepository userRepository;
@@ -35,8 +37,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if(userRepository.findByEmail(userDto.getEmail()).isPresent())
             throw new Exception("Record already exists");
         User user = new User();
-        user.setEmail(user.getEmail());
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+        user.setAddress(userDto.getAddress());
+        user.setRole(userDto.getRole());
         String publicUserId = JWTUtils.generateUserID(10);
        // user.setUserId(publicUserId);
         User storedUserDetails =userRepository.save(user);
@@ -68,8 +74,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email).get();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        GrantedAuthority grantedAuthority= new SimpleGrantedAuthority("ROLE_"+user.getRole().name());
+        authorities.add(grantedAuthority);
         if(user==null) throw new UsernameNotFoundException(email);
         return new org.springframework.security.core.userdetails.User(user.getEmail(),user.getPassword(),
-                true,true,true,true,new ArrayList<>());
+                true,true,true,true,authorities);
     }
 }
