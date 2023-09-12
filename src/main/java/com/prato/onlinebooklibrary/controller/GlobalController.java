@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -16,6 +17,14 @@ import java.util.regex.Pattern;
 
 @ControllerAdvice
 public class GlobalController {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleMissingException(Exception ex){
+        return new ResponseEntity<>("Error! Email already exists!", HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handlingEnumExceptions(){
+        return new ResponseEntity<>(new InvalidRoleException().getMessage(), HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler({SQLIntegrityConstraintViolationException.class})
     public ResponseEntity<?> handleIntegrityException(SQLIntegrityConstraintViolationException ex) {
         Pattern pattern = Pattern.compile("'(\\S+@\\S+)'");

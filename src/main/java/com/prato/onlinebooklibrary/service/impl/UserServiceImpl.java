@@ -2,7 +2,6 @@ package com.prato.onlinebooklibrary.service.impl;
 
 import com.prato.onlinebooklibrary.entity.*;
 import com.prato.onlinebooklibrary.exception.IllegalOperationException;
-import com.prato.onlinebooklibrary.model.BookDto;
 import com.prato.onlinebooklibrary.model.ReviewDto;
 import com.prato.onlinebooklibrary.repository.*;
 import com.prato.onlinebooklibrary.service.UserService;
@@ -133,7 +132,10 @@ public class UserServiceImpl implements UserService {
         Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
         if(optionalUser.isPresent() && optionalBook.isPresent()){
             if(optionalBook.get().getStatus().equals(Book.Status.Available)){
-                throw new IllegalOperationException("Error Renting! The book is available to borrow");
+                throw new IllegalOperationException("Error Reserving! The book is available to borrow");
+            }
+            if(optionalBook.get().getStatus().equals(Book.Status.Deleted)){
+                throw new IllegalOperationException("Error Reserving! The book is not available");
             }
             Reserve reserve=new Reserve();
             reserve.setUser(optionalUser.get());

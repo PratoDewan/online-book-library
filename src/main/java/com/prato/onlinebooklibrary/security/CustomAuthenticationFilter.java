@@ -37,11 +37,20 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(creds.getEmail(),creds.getPassword())
             );
-        } catch (IOException | InternalAuthenticationServiceException e) {
+        } catch (IOException e) {
 //            log.info("Exception occurred at attemptAuthentication method: {}", e.getLocalizedMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             try {
                 response.getWriter().write("Authentication failed: Please provide proper input data!");
+                response.getWriter().flush();
+            } catch (IOException ex) {
+                return null;
+            }
+            return null;
+        }catch ( InternalAuthenticationServiceException e){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            try {
+                response.getWriter().write("Authentication failed: Email or password is incorrect!");
                 response.getWriter().flush();
             } catch (IOException ex) {
                 return null;

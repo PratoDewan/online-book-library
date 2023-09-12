@@ -2,7 +2,6 @@ package com.prato.onlinebooklibrary.controller;
 
 import com.prato.onlinebooklibrary.entity.Borrowed;
 import com.prato.onlinebooklibrary.entity.User;
-import com.prato.onlinebooklibrary.model.BookDto;
 import com.prato.onlinebooklibrary.service.AdminService;
 import com.prato.onlinebooklibrary.service.CommonService;
 import com.prato.onlinebooklibrary.service.UserService;
@@ -19,7 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/users/{userId}")
 public class UserController {
     @Autowired
     private AdminService adminService;
@@ -27,19 +26,19 @@ public class UserController {
     private CommonService commonService;
     @Autowired
     private  UserService userService;
-    @GetMapping("/{userId}")
+    @GetMapping("")
     public ResponseEntity<Optional<User>> findById(@PathVariable int userId){
         return new ResponseEntity<>(adminService.getUserById(userId), HttpStatus.OK);
     }
-    @GetMapping("/{userId}/books")
+    @GetMapping("/books")
     public ResponseEntity<Set<?>> findBorrowedBooksByUser(@PathVariable int userId){
         return new ResponseEntity<>(commonService.borrowedBooksByUser(userId),HttpStatus.OK);
     }
-    @GetMapping("/{userId}/borrowed-books")
+    @GetMapping("/borrowed-books")
     public ResponseEntity<Set<?>> findCurrentBorrowedBooksByUser(@PathVariable int userId){
         return new ResponseEntity<>(commonService.currentlyBorrowedBooks(userId),HttpStatus.OK);
     }
-    @GetMapping("/{userId}/history")
+    @GetMapping("/history")
     public ResponseEntity<List<Borrowed>> findUserHistory(@PathVariable int userId){
         return new ResponseEntity<>(userService.borrowHistory(userId), HttpStatus.OK);
     }
