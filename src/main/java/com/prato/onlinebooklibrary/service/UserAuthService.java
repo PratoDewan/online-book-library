@@ -8,8 +8,10 @@ import java.util.List;
 
 public interface UserAuthService {
     ResponseDto createUser(UserDto user) throws Exception;
+
     UserDto getUser(String email);
 
     UserDto getUserByUserId(Integer id) throws Exception;
+
     List<User> findAllUsers();
 }

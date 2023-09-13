@@ -23,6 +23,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 public class UserAuthServiceImpl implements UserAuthService, UserDetailsService {
     @Autowired
@@ -30,16 +31,18 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Override
-    public List<User> findAllUsers(){
+    public List<User> findAllUsers() {
         return userRepository.findAll();
     }
+
     @Override
     public ResponseDto createUser(UserDto userDto) throws Exception {
         ModelMapper modelMapper = new ModelMapper();
-        if(userRepository.findByEmail(userDto.getEmail()).isPresent())
+        if (userRepository.findByEmail(userDto.getEmail()).isPresent())
             throw new EmailException();
-        if(userDto.getPassword().length()<5){
+        if (userDto.getPassword().length() < 5) {
             throw new PasswordException();
         }
         User user = new User();
@@ -50,11 +53,8 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
         user.setAddress(userDto.getAddress());
         user.setRole(userDto.getRole());
         String publicUserId = JWTUtils.generateUserID(10);
-       // user.setUserId(publicUserId);
-        User storedUserDetails =userRepository.save(user);
-        String accessToken = JWTUtils.generateToken(publicUserId); // Adjust this based on your token generation logic
-
-        // Create a response object containing the token
+        User storedUserDetails = userRepository.save(user);
+        String accessToken = JWTUtils.generateToken(publicUserId);
         ResponseDto responseDto = modelMapper.map(storedUserDetails, ResponseDto.class);
         responseDto.setAccessToken(accessToken);
         return responseDto;
@@ -63,9 +63,9 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
     @Override
     public UserDto getUser(String email) {
         User user = userRepository.findByEmail(email).get();
-        if(user == null) throw new UsernameNotFoundException("No record found");
+        if (user == null) throw new UsernameNotFoundException("No record found");
         UserDto returnValue = new UserDto();
-        BeanUtils.copyProperties(user,returnValue);
+        BeanUtils.copyProperties(user, returnValue);
         return returnValue;
     }
 
@@ -73,7 +73,7 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
     public UserDto getUserByUserId(Integer userId) throws Exception {
         UserDto returnValue = new UserDto();
         User user = userRepository.findByUserId(userId).orElseThrow(Exception::new);
-        BeanUtils.copyProperties(user,returnValue);
+        BeanUtils.copyProperties(user, returnValue);
         return returnValue;
     }
 
@@ -81,10 +81,10 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email).get();
         List<GrantedAuthority> authorities = new ArrayList<>();
-        GrantedAuthority grantedAuthority= new SimpleGrantedAuthority("ROLE_"+user.getRole().name());
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
         authorities.add(grantedAuthority);
-        if(user==null) throw new UsernameNotFoundException(email);
-        return new org.springframework.security.core.userdetails.User(user.getEmail(),user.getPassword(),
-                true,true,true,true,authorities);
+        if (user == null) throw new UsernameNotFoundException(email);
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
+                true, true, true, true, authorities);
     }
 }

@@ -7,8 +7,9 @@ import java.time.LocalDate;
 import java.util.Calendar;
 //import java.util.Date;
 import java.sql.Date;
+
 @Entity
-@Table(name="Borrowed")
+@Table(name = "Borrowed")
 @Component
 public class Borrowed {
     @Id
@@ -29,15 +30,17 @@ public class Borrowed {
     private Date returnDate;
     @Column(name = "status")
     private String status;
+
     @PrePersist
     public void prePersist() {
         LocalDate currentDate = LocalDate.now();
         borrowedDate = Date.valueOf(currentDate);
         LocalDate dueDate = currentDate.plusDays(7);
         this.dueDate = Date.valueOf(dueDate);
-        status = "borrowed";
+        status = "Borrowed";
     }
-    public Borrowed(){
+
+    public Borrowed() {
 
     }
 

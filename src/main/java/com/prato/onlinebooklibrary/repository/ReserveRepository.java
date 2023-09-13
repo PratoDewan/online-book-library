@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ReserveRepository extends JpaRepository<Reserve,Integer> {
+public interface ReserveRepository extends JpaRepository<Reserve, Integer> {
     Optional<Reserve> findByUserAndBook(User user, Book book);
+
     List<Reserve> findByBookAndBookStatus(Book book, Reserve.BookStatus bookStatus);
 }

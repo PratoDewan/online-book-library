@@ -25,25 +25,25 @@ public class UserController {
     @Autowired
     private CommonService commonService;
     @Autowired
-    private  UserService userService;
+    private UserService userService;
+
     @GetMapping("")
-    public ResponseEntity<Optional<User>> findById(@PathVariable int userId){
+    public ResponseEntity<Optional<User>> findById(@PathVariable int userId) {
         return new ResponseEntity<>(adminService.getUserById(userId), HttpStatus.OK);
     }
+
     @GetMapping("/books")
-    public ResponseEntity<Set<?>> findBorrowedBooksByUser(@PathVariable int userId){
-        return new ResponseEntity<>(commonService.borrowedBooksByUser(userId),HttpStatus.OK);
+    public ResponseEntity<Set<?>> findBorrowedBooksByUser(@PathVariable int userId) {
+        return new ResponseEntity<>(commonService.borrowedBooksByUser(userId), HttpStatus.OK);
     }
+
     @GetMapping("/borrowed-books")
-    public ResponseEntity<Set<?>> findCurrentBorrowedBooksByUser(@PathVariable int userId){
-        return new ResponseEntity<>(commonService.currentlyBorrowedBooks(userId),HttpStatus.OK);
+    public ResponseEntity<Set<?>> findCurrentBorrowedBooksByUser(@PathVariable int userId) {
+        return new ResponseEntity<>(commonService.currentlyBorrowedBooks(userId), HttpStatus.OK);
     }
+
     @GetMapping("/history")
-    public ResponseEntity<List<Borrowed>> findUserHistory(@PathVariable int userId){
+    public ResponseEntity<List<Borrowed>> findUserHistory(@PathVariable int userId) {
         return new ResponseEntity<>(userService.borrowHistory(userId), HttpStatus.OK);
     }
-//    @GetMapping("/all")
-//    public ResponseEntity<List<Borrowed>> findAllBorrowed(){
-//        return new ResponseEntity<>(commonService.getAllBorrowed(),HttpStatus.OK);
-//    }
 }

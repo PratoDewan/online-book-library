@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BorrowedRepository extends JpaRepository<Borrowed,Integer> {
+public interface BorrowedRepository extends JpaRepository<Borrowed, Integer> {
     Optional<Borrowed> findByUserAndBookAndStatus(User user, Book book, String status);
+
     List<Borrowed> findByUser(User user);
+
     List<Borrowed> findByUserAndStatus(User user, String status);
 }

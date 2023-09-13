@@ -23,22 +23,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager){
-        this.authenticationManager=authenticationManager;
+
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
         setFilterProcessesUrl("/user/login");
     }
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
             UserLoginRequestModel creds = new ObjectMapper().readValue(request.getInputStream(), UserLoginRequestModel.class);
             return authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(creds.getEmail(),creds.getPassword())
+                    new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword())
             );
         } catch (IOException e) {
-//            log.info("Exception occurred at attemptAuthentication method: {}", e.getLocalizedMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             try {
                 response.getWriter().write("Authentication failed: Please provide proper input data!");
@@ -47,7 +49,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 return null;
             }
             return null;
-        }catch ( InternalAuthenticationServiceException e){
+        } catch (InternalAuthenticationServiceException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             try {
                 response.getWriter().write("Authentication failed: Email or password is incorrect!");
@@ -61,12 +63,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        String user = ((User)authResult.getPrincipal()).getUsername();
+        String user = ((User) authResult.getPrincipal()).getUsername();
         String accessToken = JWTUtils.generateToken(user);
         UserAuthService userService = (UserAuthService) SpringApplicationContext.getBean("userAuthServiceImpl");
         UserDto userDto = userService.getUser(user);
-//        response.addHeader("userId",userDto.getUserId());
-//        response.addHeader(AppConstants.HEADER_STRING,AppConstants.TOKEN_PREFIX+accessToken);
+
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("userId", userDto.getUserId());
         responseBody.put("accessToken", accessToken);
@@ -78,6 +79,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();
     }
+
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                               AuthenticationException failed) throws IOException {

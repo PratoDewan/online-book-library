@@ -7,7 +7,8 @@ public class BookDto {
     private String title;
     private String author;
     private String isbn;
-    public BookDto(){
+
+    public BookDto() {
 
     }
 
@@ -49,6 +50,7 @@ public class BookDto {
     public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -21,22 +21,26 @@ public class BookController {
     private UserService userService;
     @Autowired
     private CommonService commonService;
+
     @PostMapping("/create")
-    public ResponseEntity<String> createNewBook(@RequestBody Book book){
+    public ResponseEntity<String> createNewBook(@RequestBody Book book) {
         adminService.createBook(book);
         return new ResponseEntity<>("Successfully created!", HttpStatus.CREATED);
     }
+
     @GetMapping("/all")
-    public ResponseEntity<List<?>> getAllBooks(){
+    public ResponseEntity<List<?>> getAllBooks() {
         return new ResponseEntity<>(commonService.getAllBooks(), HttpStatus.OK);
     }
+
     @PutMapping("/update")
-    public ResponseEntity<String> updateBook(@RequestBody BookDto bookDto){
+    public ResponseEntity<String> updateBook(@RequestBody BookDto bookDto) {
         adminService.updateBook(bookDto);
         return new ResponseEntity<>("Successfully updated!", HttpStatus.OK);
     }
+
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteBook(@RequestBody BookDto bookDto){
+    public ResponseEntity<String> deleteBook(@RequestBody BookDto bookDto) {
         adminService.deleteBook(bookDto);
         return new ResponseEntity<>("Successfully deleted!", HttpStatus.OK);
     }

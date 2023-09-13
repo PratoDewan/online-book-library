@@ -28,89 +28,96 @@ public class UserServiceImpl implements UserService {
     private ReviewRepository reviewRepository;
     @Autowired
     private ReserveRepository reserveRepository;
+
     @Override
-    public List<User> getAllUser(){
+    public List<User> getAllUser() {
         return userRepository.findAll();
     }
-    private Optional<User> getUser(){
+
+    private Optional<User> getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findByEmail(authentication.getName());
     }
+
     @Override
-    public void borrowBook(int bookId){
-        if(bookId<0){
+    public void borrowBook(int bookId) {
+        if (bookId < 0) {
             throw new IllegalArgumentException("Book Id");
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> optionalUser = userRepository.findByEmail(authentication.getName());
-        Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
-        if(optionalUser.isPresent() && optionalBook.isPresent())
-        {
-            if(optionalBook.get().getStatus().equals(Book.Status.Available)) {
-                Borrowed borrowed = new Borrowed();
-                borrowed.setBook(optionalBook.get());
-                borrowed.setUser(optionalUser.get());
-                optionalBook.get().setStatus(Book.Status.Borrowed);
-                bookRepository.save(optionalBook.get());
-                borrowedRepository.save(borrowed);
-                return;
+        Optional<Book> optionalBook = bookRepository.findByBookId(bookId);
+        if (optionalUser.isPresent() && optionalBook.isPresent()) {
+            if (borrowedRepository.findByUserAndStatus(optionalUser.get(), "Borrowed").isEmpty()) {
+                if (optionalBook.get().getStatus().equals(Book.Status.Available)) {
+                    Borrowed borrowed = new Borrowed();
+                    borrowed.setBook(optionalBook.get());
+                    borrowed.setUser(optionalUser.get());
+                    optionalBook.get().setStatus(Book.Status.Borrowed);
+                    bookRepository.save(optionalBook.get());
+                    borrowedRepository.save(borrowed);
+                    return;
+                } else {
+                    throw new IllegalOperationException("Error Borrowing! The book is not available.");
+                }
+            } else {
+                throw new IllegalOperationException("Error! Please return the borrowed book first.");
             }
-            else{
-                throw new IllegalOperationException("Error Borrowing! The book is not available");
-            }
         }
-        if(optionalUser.isEmpty() && optionalBook.isEmpty()){
-            throw new EmptyResultDataAccessException("User, Book",1);
+        if (optionalUser.isEmpty() && optionalBook.isEmpty()) {
+            throw new EmptyResultDataAccessException("User, Book", 1);
         }
-        if(optionalUser.isEmpty()){
-            throw new EmptyResultDataAccessException("User",1);
+        if (optionalUser.isEmpty()) {
+            throw new EmptyResultDataAccessException("User", 1);
         }
-        throw new EmptyResultDataAccessException("Book",1);
+        throw new EmptyResultDataAccessException("Book", 1);
     }
+
     @Override
-    public void returnBook(int bookId){
-        Optional<User> optionalUser=getUser();
-        Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
-        if(optionalUser.isPresent() && optionalBook.isPresent())
-        {
-            User user=optionalUser.get();
-            Book book=optionalBook.get();
-            Optional<Borrowed>borrowedOptional = borrowedRepository.findByUserAndBookAndStatus(user,book,"borrowed");
-            if(borrowedOptional.isPresent()) {
-                borrowedOptional.get().setStatus("returned");
+    public void returnBook(int bookId) {
+        if(bookId<0){
+            throw new IllegalArgumentException(("Book ID"));
+        }
+        Optional<User> optionalUser = getUser();
+        Optional<Book> optionalBook = bookRepository.findByBookId(bookId);
+        if (optionalUser.isPresent() && optionalBook.isPresent()) {
+            User user = optionalUser.get();
+            Book book = optionalBook.get();
+            Optional<Borrowed> borrowedOptional = borrowedRepository.findByUserAndBookAndStatus(user, book, "Borrowed");
+            if (borrowedOptional.isPresent()) {
+                borrowedOptional.get().setStatus("Returned");
                 borrowedOptional.get().setReturnDate(Date.valueOf(LocalDate.now()));
                 book.setStatus(Book.Status.Available);
                 bookRepository.save(book);
                 borrowedRepository.save(borrowedOptional.get());
                 List<Reserve> reserveList = reserveRepository.findByBookAndBookStatus(book, Reserve.BookStatus.Borrowed);
-                for(Reserve reserve: reserveList){
+                for (Reserve reserve : reserveList) {
                     reserve.setBookStatus(Reserve.BookStatus.Available);
                     reserveRepository.save(reserve);
                 }
                 return;
-            }
-            else{
+            } else {
                 throw new ReturnException();
             }
         }
-        if(optionalUser.isEmpty() && optionalBook.isEmpty()){
-            throw new EmptyResultDataAccessException("User, Book",1);
+        if (optionalUser.isEmpty() && optionalBook.isEmpty()) {
+            throw new EmptyResultDataAccessException("User, Book", 1);
         }
-        if(optionalUser.isEmpty()){
-            throw new EmptyResultDataAccessException("User",1);
+        if (optionalUser.isEmpty()) {
+            throw new EmptyResultDataAccessException("User", 1);
         }
-        throw new EmptyResultDataAccessException("Book",1);
+        throw new EmptyResultDataAccessException("Book", 1);
     }
+
     @Override
-    public void createReview(ReviewDto reviewDto, int bookId){
-        if(bookId<0){
+    public void createReview(ReviewDto reviewDto, int bookId) {
+        if (bookId < 0) {
             throw new IllegalArgumentException("Book Id");
         }
-        Optional<User> optionalUser=getUser();
-        Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
-        if(optionalUser.isPresent() && optionalBook.isPresent())
-        {
-            Review review=new Review();
+        Optional<User> optionalUser = getUser();
+        Optional<Book> optionalBook = bookRepository.findByBookId(bookId);
+        if (optionalUser.isPresent() && optionalBook.isPresent()) {
+            Review review = new Review();
             review.setBook(optionalBook.get());
             review.setUser(optionalUser.get());
             review.setComment(reviewDto.getComment());
@@ -118,50 +125,55 @@ public class UserServiceImpl implements UserService {
             reviewRepository.save(review);
             return;
         }
-        if(optionalUser.isEmpty() && optionalBook.isEmpty()){
-            throw new EmptyResultDataAccessException("User, Book",1);
+        if (optionalUser.isEmpty() && optionalBook.isEmpty()) {
+            throw new EmptyResultDataAccessException("User, Book", 1);
         }
-        if(optionalUser.isEmpty()){
-            throw new EmptyResultDataAccessException("User",1);
+        if (optionalUser.isEmpty()) {
+            throw new EmptyResultDataAccessException("User", 1);
         }
-        throw new EmptyResultDataAccessException("Book",1);
+        throw new EmptyResultDataAccessException("Book", 1);
     }
+
     @Override
-    public void updateReview(ReviewDto reviewDto, int bookId,int reviewId){
-        if(bookId<0 && reviewId<0){
+    public void updateReview(ReviewDto reviewDto, int bookId, int reviewId) {
+        if (bookId < 0 && reviewId < 0) {
             throw new IllegalArgumentException("Book Id, Review Id");
         }
-        if(bookId<0){
+        if (bookId < 0) {
             throw new IllegalArgumentException("Book Id");
         }
-        if(reviewId<0){
+        if (reviewId < 0) {
             throw new IllegalArgumentException("Review Id");
         }
-        Optional<User> optionalUser=getUser();
-        Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
-        Optional<Review> optionalReview=reviewRepository.findById(reviewId);
-        if(optionalUser.isPresent() && optionalBook.isPresent() && optionalReview.isPresent()){
-            if(reviewDto.getComment()!=null){
+        Optional<User> optionalUser = getUser();
+        Optional<Book> optionalBook = bookRepository.findByBookId(bookId);
+        Optional<Review> optionalReview = reviewRepository.findById(reviewId);
+        if (optionalUser.isPresent() && optionalBook.isPresent() && optionalReview.isPresent()) {
+            if (reviewDto.getComment() != null) {
                 optionalReview.get().setComment(reviewDto.getComment());
             }
-            if(reviewDto.getRating()!=null){
+            if (reviewDto.getRating() != null) {
                 optionalReview.get().setRating(reviewDto.getRating());
             }
             reviewRepository.save(optionalReview.get());
-        }
-        else{
-            throw new EmptyResultDataAccessException("User or Book or Review",1);
+        } else {
+            throw new EmptyResultDataAccessException("User or Book or Review", 1);
         }
     }
+
     @Override
-    public void deleteReview(int bookId,int reviewId){
-        Optional<User> optionalUser=getUser();
-        Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
-        Optional<Review> optionalReview=reviewRepository.findById(reviewId);
-        if(optionalUser.isPresent() && optionalBook.isPresent() && optionalReview.isPresent()){
+    public void deleteReview(int bookId, int reviewId) {
+        if(bookId<0 || reviewId<0){
+            throw new IllegalArgumentException("Book ID or Review ID");
+        }
+        Optional<User> optionalUser = getUser();
+        Optional<Book> optionalBook = bookRepository.findByBookId(bookId);
+        Optional<Review> optionalReview = reviewRepository.findById(reviewId);
+        if (optionalUser.isPresent() && optionalBook.isPresent() && optionalReview.isPresent()) {
             reviewRepository.deleteById(reviewId);
         }
     }
+
     @Override
     public List<Review> getReviewsByBookId(int bookId) {
         if (bookId < 0) {
@@ -174,44 +186,48 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createReservation(int bookId){
-        if(bookId<0){
+    public void createReservation(int bookId) {
+        if (bookId < 0) {
             throw new IllegalArgumentException("Book Id");
         }
-        Optional<User> optionalUser=getUser();
-        Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
-        if(optionalUser.isPresent() && optionalBook.isPresent()){
-            if(optionalBook.get().getStatus().equals(Book.Status.Available)){
+        Optional<User> optionalUser = getUser();
+        Optional<Book> optionalBook = bookRepository.findByBookId(bookId);
+        if (optionalUser.isPresent() && optionalBook.isPresent()) {
+            if (optionalBook.get().getStatus().equals(Book.Status.Available)) {
                 throw new IllegalOperationException("Error Reserving! The book is available to borrow");
             }
-            if(optionalBook.get().getStatus().equals(Book.Status.Deleted)){
+            if (optionalBook.get().getStatus().equals(Book.Status.Deleted)) {
                 throw new IllegalOperationException("Error Reserving! The book is not available");
             }
-            Reserve reserve=new Reserve();
+            Reserve reserve = new Reserve();
             reserve.setUser(optionalUser.get());
             reserve.setBook(optionalBook.get());
             reserveRepository.save(reserve);
             return;
         }
-        throw new EmptyResultDataAccessException("User or Book",1);
+        throw new EmptyResultDataAccessException("User or Book", 1);
     }
+
     @Override
-    public void cancelReservation(int bookId){
-        Optional<User> optionalUser=getUser();
-        Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
-        if(optionalUser.isPresent() && optionalBook.isPresent()){
-            User user=optionalUser.get();
-            Book book=optionalBook.get();
-            Optional<Reserve> optionalReserve=reserveRepository.findByUserAndBook(user,book);
+    public void cancelReservation(int bookId) {
+        if(bookId<0){
+            throw new IllegalArgumentException("Book Id");
+        }
+        Optional<User> optionalUser = getUser();
+        Optional<Book> optionalBook = bookRepository.findByBookId(bookId);
+        if (optionalUser.isPresent() && optionalBook.isPresent()) {
+            User user = optionalUser.get();
+            Book book = optionalBook.get();
+            Optional<Reserve> optionalReserve = reserveRepository.findByUserAndBook(user, book);
             optionalReserve.ifPresent(reserve -> reserve.setReservationStatus(Reserve.ReservationStatus.Cancelled));
             return;
         }
-        throw new EmptyResultDataAccessException("User or Book",1);
+        throw new EmptyResultDataAccessException("User or Book", 1);
     }
 
     @Override
     public List<Borrowed> borrowHistory(int userId) {
-        if(userId<0){
+        if (userId < 0) {
             throw new IllegalArgumentException("User Id");
         }
         Optional<User> optionalUser = userRepository.findByUserId(userId);

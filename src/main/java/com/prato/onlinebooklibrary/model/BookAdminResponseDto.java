@@ -10,7 +10,8 @@ public class BookAdminResponseDto {
     private String author;
     private String isbn;
     private Book.Status status;
-    public BookAdminResponseDto(){
+
+    public BookAdminResponseDto() {
 
     }
 
@@ -61,6 +62,7 @@ public class BookAdminResponseDto {
     public void setStatus(Book.Status status) {
         this.status = status;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

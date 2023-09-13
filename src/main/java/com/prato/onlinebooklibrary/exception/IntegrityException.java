@@ -1,9 +1,9 @@
 package com.prato.onlinebooklibrary.exception;
 
-public class IntegrityException extends Exception{
+public class IntegrityException extends Exception {
     private static final String MESSAGE = "Duplicate Entry Error! ";
 
     public IntegrityException(String field) {
-        super(MESSAGE+field+" already exists!");
+        super(MESSAGE + field + " already exists!");
     }
 }

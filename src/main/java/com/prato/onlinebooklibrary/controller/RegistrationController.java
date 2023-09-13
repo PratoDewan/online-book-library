@@ -22,10 +22,12 @@ public class RegistrationController {
     private UserAuthService userService;
     @Autowired
     private UserService userOnlyService;
+
     @GetMapping("/all")
-    public ResponseEntity<List<User>> registerUser(){
+    public ResponseEntity<List<User>> registerUser() {
         return new ResponseEntity<>(userOnlyService.getAllUser(), HttpStatus.OK);
     }
+
     @PostMapping("/user/register")
     public ResponseEntity<ResponseDto> registerUser(@RequestBody UserDto userDto) throws Exception {
         return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);

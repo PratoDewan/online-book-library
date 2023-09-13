@@ -9,6 +9,8 @@ import java.util.Set;
 
 public interface CommonService {
     Set<?> borrowedBooksByUser(int userId);
+
     Set<?> currentlyBorrowedBooks(int userId);
+
     List<?> getAllBooks();
 }

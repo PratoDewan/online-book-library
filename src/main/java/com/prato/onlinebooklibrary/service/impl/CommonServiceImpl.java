@@ -27,17 +27,21 @@ public class CommonServiceImpl implements CommonService {
     private UserRepository userRepository;
     @Autowired
     private BookRepository bookRepository;
+
     @Override
     public Set<?> borrowedBooksByUser(int userId) {
-        Optional<User> optionalUser=userRepository.findByUserId(userId);
-        Optional<User> optionalTokenUser=getUser();
-        if(userId!=optionalTokenUser.get().getUserId() && optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)){
+        if(userId<0){
+            throw new IllegalArgumentException("User ID");
+        }
+        Optional<User> optionalUser = userRepository.findByUserId(userId);
+        Optional<User> optionalTokenUser = getUser();
+        if (userId != optionalTokenUser.get().getUserId() && optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)) {
             throw new IllegalApiAccessException();
         }
-        if(optionalUser.isPresent()){
-            User user=optionalUser.get();
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
             List<Borrowed> borrowedList = borrowedRepository.findByUser(user);
-            if(optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)) {
+            if (optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)) {
                 System.out.println("I am here!");
                 Set<BookDto> borrowedBookSet = new HashSet<>();
                 for (Borrowed borrowedBook : borrowedList) {
@@ -50,8 +54,7 @@ public class CommonServiceImpl implements CommonService {
                     borrowedBookSet.add(bookDto);
                 }
                 return borrowedBookSet;
-            }
-            else{
+            } else {
                 Set<BookAdminResponseDto> borrowedBookSet = new HashSet<>();
                 for (Borrowed borrowedBook : borrowedList) {
                     Book book = borrowedBook.getBook();
@@ -66,20 +69,23 @@ public class CommonServiceImpl implements CommonService {
                 return borrowedBookSet;
             }
         }
-        throw new EmptyResultDataAccessException("User",1);
+        throw new EmptyResultDataAccessException("User", 1);
     }
 
     @Override
     public Set<?> currentlyBorrowedBooks(int userId) {
-        Optional<User> optionalUser=userRepository.findByUserId(userId);
-        Optional<User> optionalTokenUser=getUser();
-        if(userId!=optionalTokenUser.get().getUserId() && optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)){
+        if(userId<0){
+            throw new IllegalArgumentException("User Id");
+        }
+        Optional<User> optionalUser = userRepository.findByUserId(userId);
+        Optional<User> optionalTokenUser = getUser();
+        if (userId != optionalTokenUser.get().getUserId() && optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)) {
             throw new IllegalApiAccessException();
         }
-        if(optionalUser.isPresent()){
-            User user=optionalUser.get();
-            List<Borrowed> borrowedList = borrowedRepository.findByUserAndStatus(user,"Borrowed");
-            if(optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)) {
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            List<Borrowed> borrowedList = borrowedRepository.findByUserAndStatus(user, "Borrowed");
+            if (optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)) {
                 Set<BookDto> borrowedBookSet = new HashSet<>();
                 for (Borrowed borrowedBook : borrowedList) {
                     Book book = borrowedBook.getBook();
@@ -91,8 +97,7 @@ public class CommonServiceImpl implements CommonService {
                     borrowedBookSet.add(bookDto);
                 }
                 return borrowedBookSet;
-            }
-            else{
+            } else {
                 Set<BookAdminResponseDto> borrowedBookSet = new HashSet<>();
                 for (Borrowed borrowedBook : borrowedList) {
                     Book book = borrowedBook.getBook();
@@ -109,22 +114,23 @@ public class CommonServiceImpl implements CommonService {
         }
         return null;
     }
-    private Optional<User> getUser(){
+
+    private Optional<User> getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         System.out.println(authentication.getName());
         return userRepository.findByEmail(authentication.getName());
     }
+
     @Override
-    public List<?> getAllBooks(){
+    public List<?> getAllBooks() {
         List<Book> bookList = bookRepository.findAll();
         Optional<User> optionalUser = getUser();
-        if(optionalUser.isPresent())
-        {
-            User user=optionalUser.get();
-            if(user.getRole().equals(User.Role.CUSTOMER)) {
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (user.getRole().equals(User.Role.CUSTOMER)) {
                 List<BookDto> bookDtoList = new ArrayList<>();
                 for (Book book : bookList) {
-                    if(!book.getStatus().equals(Book.Status.Deleted)) {
+                    if (!book.getStatus().equals(Book.Status.Deleted)) {
                         BookDto bookDto = new BookDto();
                         bookDto.setBookId(book.getBookId());
                         bookDto.setTitle(book.getTitle());
@@ -134,8 +140,7 @@ public class CommonServiceImpl implements CommonService {
                     }
                 }
                 return bookDtoList;
-            }
-            else{
+            } else {
                 List<BookAdminResponseDto> bookAdminResponseDtoList = new ArrayList<>();
                 for (Book book : bookList) {
                     BookAdminResponseDto bookAdminResponseDto = new BookAdminResponseDto();

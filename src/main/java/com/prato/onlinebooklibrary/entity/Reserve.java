@@ -23,20 +23,25 @@ public class Reserve {
     private Book book;
     @Column(name = "reservation_date")
     private Date reservationDate;
-    public enum ReservationStatus{
+
+    public enum ReservationStatus {
         Reserved,
         Cancelled
     }
+
     @Enumerated(EnumType.STRING)
     @Column(name = "reservation_status")
     private ReservationStatus reservationStatus;
-    public enum BookStatus{
+
+    public enum BookStatus {
         Available,
         Borrowed
     }
+
     @Enumerated(EnumType.STRING)
     @Column(name = "book_status")
     private BookStatus bookStatus;
+
     @PrePersist
     public void prePersist() {
         LocalDate currentDate = LocalDate.now();
@@ -44,7 +49,8 @@ public class Reserve {
         reservationStatus = ReservationStatus.Reserved;
         bookStatus = BookStatus.Borrowed;
     }
-    public Reserve(){
+
+    public Reserve() {
 
     }
 

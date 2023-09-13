@@ -1,8 +1,9 @@
 package com.prato.onlinebooklibrary.exception;
 
-public class IllegalApiAccessException extends RuntimeException{
+public class IllegalApiAccessException extends RuntimeException {
     private static final String MESSAGE = "Error ! You are not authorized to use this API!";
-    public IllegalApiAccessException(){
+
+    public IllegalApiAccessException() {
         super(MESSAGE);
     }
 }

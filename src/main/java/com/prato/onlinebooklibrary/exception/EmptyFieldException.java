@@ -1,6 +1,6 @@
 package com.prato.onlinebooklibrary.exception;
 
-public class EmptyFieldException extends RuntimeException{
+public class EmptyFieldException extends RuntimeException {
     private static final String MESSAGE = "Error! Valid ";
 
     public EmptyFieldException(String fieldName) {

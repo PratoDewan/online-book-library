@@ -4,7 +4,8 @@ package com.prato.onlinebooklibrary.model;
 public class UserLoginRequestModel {
     private String email;
     private String password;
-    public UserLoginRequestModel(){
+
+    public UserLoginRequestModel() {
 
     }
 
