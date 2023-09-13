@@ -1,6 +1,7 @@
 package com.prato.onlinebooklibrary.repository;
 
 import com.prato.onlinebooklibrary.entity.Book;
+import com.prato.onlinebooklibrary.entity.Reserve;
 import com.prato.onlinebooklibrary.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

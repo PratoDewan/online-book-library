@@ -20,7 +20,7 @@ public interface UserService {
     void returnBook(int bookId);
     void createReview(ReviewDto reviewDto, int bookId);
     void updateReview(ReviewDto reviewDto, int bookId,int reviewId);
-    void deleteReview(ReviewDto reviewDto, int bookId,int reviewId);
+    void deleteReview(int bookId,int reviewId);
     List<Review> getReviewsByBookId(int bookId);
     void createReservation(int bookId);
     void cancelReservation(int bookId);

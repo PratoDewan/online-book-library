@@ -2,6 +2,8 @@ package com.prato.onlinebooklibrary.model;
 
 import com.prato.onlinebooklibrary.entity.Book;
 
+import java.util.Objects;
+
 public class BookAdminResponseDto {
     private Integer bookId;
     private String title;
@@ -58,5 +60,17 @@ public class BookAdminResponseDto {
 
     public void setStatus(Book.Status status) {
         this.status = status;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BookAdminResponseDto bookDto = (BookAdminResponseDto) o;
+        return Objects.equals(bookId, bookDto.bookId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bookId);
     }
 }

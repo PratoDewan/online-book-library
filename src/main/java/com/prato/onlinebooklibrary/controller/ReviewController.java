@@ -33,10 +33,9 @@ public class ReviewController {
         return new ResponseEntity<>("Review updated successfully!", HttpStatus.OK);
     }
     @DeleteMapping("/{reviewId}/delete")
-    public ResponseEntity<String> deleteReview(@RequestBody ReviewDto reviewDto,
-                                               @PathVariable int bookId,
+    public ResponseEntity<String> deleteReview(@PathVariable int bookId,
                                                @PathVariable int reviewId){
-        userService.deleteReview(reviewDto,bookId,reviewId);
+        userService.deleteReview(bookId,reviewId);
         return new ResponseEntity<>("Review deleted successfully!", HttpStatus.OK);
     }
 }

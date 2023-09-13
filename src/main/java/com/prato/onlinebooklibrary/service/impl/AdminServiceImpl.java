@@ -29,7 +29,12 @@ public class AdminServiceImpl implements AdminService {
         if(userId<0){
             throw new IllegalArgumentException("User Id");
         }
-        return userRepository.findById(userId);
+        Optional<User> optionalUser= userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new EmptyResultDataAccessException("User",1);
+        } else {
+            return optionalUser;
+        }
     }
     @Override
     public void createBook(Book book){
@@ -42,7 +47,7 @@ public class AdminServiceImpl implements AdminService {
             throw new IllegalArgumentException("Book Id");
         }
         if(bookDto.getBookId()==null){
-            throw new EmptyResultDataAccessException("Book Id",1);
+            throw new EmptyResultDataAccessException("Book",1);
         }
         Optional<Book> optionalBook=bookRepository.findById(bookDto.getBookId());
         if(optionalBook.isPresent())
@@ -59,6 +64,9 @@ public class AdminServiceImpl implements AdminService {
             }
             bookRepository.save(book);
         }
+        else{
+            throw new EmptyResultDataAccessException("Book",1);
+        }
     }
     @Override
     public void deleteBook(BookDto bookDto){
@@ -72,8 +80,11 @@ public class AdminServiceImpl implements AdminService {
                 bookRepository.save(optionalBook.get());
             }
             else{
-                throw new IllegalOperationException("Error in deletion! Book is not available");
+                throw new IllegalOperationException("Error in deletion! Book is currently borrowed!");
             }
+        }
+        else{
+            throw new EmptyResultDataAccessException("Book",1);
         }
     }
 }

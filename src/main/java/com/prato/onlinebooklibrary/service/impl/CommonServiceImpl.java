@@ -3,6 +3,7 @@ package com.prato.onlinebooklibrary.service.impl;
 import com.prato.onlinebooklibrary.entity.Book;
 import com.prato.onlinebooklibrary.entity.Borrowed;
 import com.prato.onlinebooklibrary.entity.User;
+import com.prato.onlinebooklibrary.exception.IllegalApiAccessException;
 import com.prato.onlinebooklibrary.model.BookAdminResponseDto;
 import com.prato.onlinebooklibrary.model.BookDto;
 import com.prato.onlinebooklibrary.repository.BookRepository;
@@ -10,6 +11,7 @@ import com.prato.onlinebooklibrary.repository.BorrowedRepository;
 import com.prato.onlinebooklibrary.repository.UserRepository;
 import com.prato.onlinebooklibrary.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
@@ -28,14 +30,20 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public Set<?> borrowedBooksByUser(int userId) {
         Optional<User> optionalUser=userRepository.findByUserId(userId);
+        Optional<User> optionalTokenUser=getUser();
+        if(userId!=optionalTokenUser.get().getUserId() && optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)){
+            throw new IllegalApiAccessException();
+        }
         if(optionalUser.isPresent()){
             User user=optionalUser.get();
             List<Borrowed> borrowedList = borrowedRepository.findByUser(user);
-            if(user.getRole().equals(User.Role.CUSTOMER)) {
+            if(optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)) {
+                System.out.println("I am here!");
                 Set<BookDto> borrowedBookSet = new HashSet<>();
                 for (Borrowed borrowedBook : borrowedList) {
                     Book book = borrowedBook.getBook();
                     BookDto bookDto = new BookDto();
+                    bookDto.setBookId(book.getBookId());
                     bookDto.setTitle(book.getTitle());
                     bookDto.setAuthor(book.getAuthor());
                     bookDto.setIsbn(book.getIsbn());
@@ -48,6 +56,7 @@ public class CommonServiceImpl implements CommonService {
                 for (Borrowed borrowedBook : borrowedList) {
                     Book book = borrowedBook.getBook();
                     BookAdminResponseDto bookAdminResponseDto = new BookAdminResponseDto();
+                    bookAdminResponseDto.setBookId(book.getBookId());
                     bookAdminResponseDto.setTitle(book.getTitle());
                     bookAdminResponseDto.setAuthor(book.getAuthor());
                     bookAdminResponseDto.setIsbn(book.getIsbn());
@@ -57,20 +66,25 @@ public class CommonServiceImpl implements CommonService {
                 return borrowedBookSet;
             }
         }
-        return null;
+        throw new EmptyResultDataAccessException("User",1);
     }
 
     @Override
     public Set<?> currentlyBorrowedBooks(int userId) {
         Optional<User> optionalUser=userRepository.findByUserId(userId);
+        Optional<User> optionalTokenUser=getUser();
+        if(userId!=optionalTokenUser.get().getUserId() && optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)){
+            throw new IllegalApiAccessException();
+        }
         if(optionalUser.isPresent()){
             User user=optionalUser.get();
             List<Borrowed> borrowedList = borrowedRepository.findByUserAndStatus(user,"Borrowed");
-            if(user.getRole().equals(User.Role.CUSTOMER)) {
+            if(optionalTokenUser.get().getRole().equals(User.Role.CUSTOMER)) {
                 Set<BookDto> borrowedBookSet = new HashSet<>();
                 for (Borrowed borrowedBook : borrowedList) {
                     Book book = borrowedBook.getBook();
                     BookDto bookDto = new BookDto();
+                    bookDto.setBookId(book.getBookId());
                     bookDto.setTitle(book.getTitle());
                     bookDto.setAuthor(book.getAuthor());
                     bookDto.setIsbn(book.getIsbn());
@@ -83,6 +97,7 @@ public class CommonServiceImpl implements CommonService {
                 for (Borrowed borrowedBook : borrowedList) {
                     Book book = borrowedBook.getBook();
                     BookAdminResponseDto bookAdminResponseDto = new BookAdminResponseDto();
+                    bookAdminResponseDto.setBookId(book.getBookId());
                     bookAdminResponseDto.setTitle(book.getTitle());
                     bookAdminResponseDto.setAuthor(book.getAuthor());
                     bookAdminResponseDto.setIsbn(book.getIsbn());
@@ -109,12 +124,14 @@ public class CommonServiceImpl implements CommonService {
             if(user.getRole().equals(User.Role.CUSTOMER)) {
                 List<BookDto> bookDtoList = new ArrayList<>();
                 for (Book book : bookList) {
-                    BookDto bookDto = new BookDto();
-                    bookDto.setBookId(book.getBookId());
-                    bookDto.setTitle(book.getTitle());
-                    bookDto.setAuthor(book.getAuthor());
-                    bookDto.setIsbn(book.getIsbn());
-                    bookDtoList.add(bookDto);
+                    if(!book.getStatus().equals(Book.Status.Deleted)) {
+                        BookDto bookDto = new BookDto();
+                        bookDto.setBookId(book.getBookId());
+                        bookDto.setTitle(book.getTitle());
+                        bookDto.setAuthor(book.getAuthor());
+                        bookDto.setIsbn(book.getIsbn());
+                        bookDtoList.add(bookDto);
+                    }
                 }
                 return bookDtoList;
             }

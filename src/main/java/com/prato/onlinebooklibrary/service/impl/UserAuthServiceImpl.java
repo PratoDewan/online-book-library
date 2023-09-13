@@ -1,6 +1,8 @@
 package com.prato.onlinebooklibrary.service.impl;
 
 import com.prato.onlinebooklibrary.entity.User;
+import com.prato.onlinebooklibrary.exception.EmailException;
+import com.prato.onlinebooklibrary.exception.PasswordException;
 import com.prato.onlinebooklibrary.model.ResponseDto;
 import com.prato.onlinebooklibrary.model.UserDto;
 import com.prato.onlinebooklibrary.repository.UserRepository;
@@ -16,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +38,10 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
     public ResponseDto createUser(UserDto userDto) throws Exception {
         ModelMapper modelMapper = new ModelMapper();
         if(userRepository.findByEmail(userDto.getEmail()).isPresent())
-            throw new Exception("Record already exists");
+            throw new EmailException();
+        if(userDto.getPassword().length()<5){
+            throw new PasswordException();
+        }
         User user = new User();
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());

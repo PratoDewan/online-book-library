@@ -17,10 +17,10 @@ import java.util.regex.Pattern;
 
 @ControllerAdvice
 public class GlobalController {
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleMissingException(Exception ex){
-        return new ResponseEntity<>("Error! Email already exists!", HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<?> handleMissingException(Exception ex){
+//        return new ResponseEntity<>("Error! Unhandled Exception occurred!", HttpStatus.BAD_REQUEST);
+//    }
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handlingEnumExceptions(){
         return new ResponseEntity<>(new InvalidRoleException().getMessage(), HttpStatus.BAD_REQUEST);
@@ -56,6 +56,22 @@ public class GlobalController {
     }
     @ExceptionHandler({IllegalOperationException.class})
     public ResponseEntity<?> handleIllegalOperationException(IllegalOperationException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(PasswordException.class)
+    public ResponseEntity<?> handlePasswordException(PasswordException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<?> handleEmailException(EmailException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ReturnException.class)
+    public ResponseEntity<?> handleReturnException(ReturnException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(IllegalApiAccessException.class)
+    public ResponseEntity<?> handleApiAccessException(IllegalApiAccessException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

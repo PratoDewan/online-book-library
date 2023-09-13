@@ -2,6 +2,7 @@ package com.prato.onlinebooklibrary.service.impl;
 
 import com.prato.onlinebooklibrary.entity.*;
 import com.prato.onlinebooklibrary.exception.IllegalOperationException;
+import com.prato.onlinebooklibrary.exception.ReturnException;
 import com.prato.onlinebooklibrary.model.ReviewDto;
 import com.prato.onlinebooklibrary.repository.*;
 import com.prato.onlinebooklibrary.service.UserService;
@@ -81,11 +82,30 @@ public class UserServiceImpl implements UserService {
                 book.setStatus(Book.Status.Available);
                 bookRepository.save(book);
                 borrowedRepository.save(borrowedOptional.get());
+                List<Reserve> reserveList = reserveRepository.findByBookAndBookStatus(book, Reserve.BookStatus.Borrowed);
+                for(Reserve reserve: reserveList){
+                    reserve.setBookStatus(Reserve.BookStatus.Available);
+                    reserveRepository.save(reserve);
+                }
+                return;
+            }
+            else{
+                throw new ReturnException();
             }
         }
+        if(optionalUser.isEmpty() && optionalBook.isEmpty()){
+            throw new EmptyResultDataAccessException("User, Book",1);
+        }
+        if(optionalUser.isEmpty()){
+            throw new EmptyResultDataAccessException("User",1);
+        }
+        throw new EmptyResultDataAccessException("Book",1);
     }
     @Override
     public void createReview(ReviewDto reviewDto, int bookId){
+        if(bookId<0){
+            throw new IllegalArgumentException("Book Id");
+        }
         Optional<User> optionalUser=getUser();
         Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
         if(optionalUser.isPresent() && optionalBook.isPresent())
@@ -96,10 +116,27 @@ public class UserServiceImpl implements UserService {
             review.setComment(reviewDto.getComment());
             review.setRating(reviewDto.getRating());
             reviewRepository.save(review);
+            return;
         }
+        if(optionalUser.isEmpty() && optionalBook.isEmpty()){
+            throw new EmptyResultDataAccessException("User, Book",1);
+        }
+        if(optionalUser.isEmpty()){
+            throw new EmptyResultDataAccessException("User",1);
+        }
+        throw new EmptyResultDataAccessException("Book",1);
     }
     @Override
     public void updateReview(ReviewDto reviewDto, int bookId,int reviewId){
+        if(bookId<0 && reviewId<0){
+            throw new IllegalArgumentException("Book Id, Review Id");
+        }
+        if(bookId<0){
+            throw new IllegalArgumentException("Book Id");
+        }
+        if(reviewId<0){
+            throw new IllegalArgumentException("Review Id");
+        }
         Optional<User> optionalUser=getUser();
         Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
         Optional<Review> optionalReview=reviewRepository.findById(reviewId);
@@ -110,10 +147,14 @@ public class UserServiceImpl implements UserService {
             if(reviewDto.getRating()!=null){
                 optionalReview.get().setRating(reviewDto.getRating());
             }
+            reviewRepository.save(optionalReview.get());
+        }
+        else{
+            throw new EmptyResultDataAccessException("User or Book or Review",1);
         }
     }
     @Override
-    public void deleteReview(ReviewDto reviewDto, int bookId,int reviewId){
+    public void deleteReview(int bookId,int reviewId){
         Optional<User> optionalUser=getUser();
         Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
         Optional<Review> optionalReview=reviewRepository.findById(reviewId);
@@ -122,12 +163,21 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public List<Review> getReviewsByBookId(int bookId){
-        Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
-        return optionalBook.map(book -> reviewRepository.findByBook(book)).orElse(null);
+    public List<Review> getReviewsByBookId(int bookId) {
+        if (bookId < 0) {
+            throw new IllegalArgumentException("Book Id");
+        }
+        Optional<Book> optionalBook = bookRepository.findByBookId(bookId);
+        return optionalBook
+                .map(book -> reviewRepository.findByBook(book))
+                .orElseThrow(() -> new EmptyResultDataAccessException("Book", 1));
     }
+
     @Override
     public void createReservation(int bookId){
+        if(bookId<0){
+            throw new IllegalArgumentException("Book Id");
+        }
         Optional<User> optionalUser=getUser();
         Optional<Book> optionalBook=bookRepository.findByBookId(bookId);
         if(optionalUser.isPresent() && optionalBook.isPresent()){
@@ -141,7 +191,9 @@ public class UserServiceImpl implements UserService {
             reserve.setUser(optionalUser.get());
             reserve.setBook(optionalBook.get());
             reserveRepository.save(reserve);
+            return;
         }
+        throw new EmptyResultDataAccessException("User or Book",1);
     }
     @Override
     public void cancelReservation(int bookId){
@@ -152,12 +204,19 @@ public class UserServiceImpl implements UserService {
             Book book=optionalBook.get();
             Optional<Reserve> optionalReserve=reserveRepository.findByUserAndBook(user,book);
             optionalReserve.ifPresent(reserve -> reserve.setReservationStatus(Reserve.ReservationStatus.Cancelled));
+            return;
         }
+        throw new EmptyResultDataAccessException("User or Book",1);
     }
 
     @Override
     public List<Borrowed> borrowHistory(int userId) {
+        if(userId<0){
+            throw new IllegalArgumentException("User Id");
+        }
         Optional<User> optionalUser = userRepository.findByUserId(userId);
-        return optionalUser.map(user -> borrowedRepository.findByUser(user)).orElse(null);
+        return optionalUser
+                .map(user -> borrowedRepository.findByUser(user))
+                .orElseThrow(() -> new EmptyResultDataAccessException("User", 1));
     }
 }

@@ -34,7 +34,6 @@ public class Reserve {
         Available,
         Borrowed
     }
-    @Getter
     @Enumerated(EnumType.STRING)
     @Column(name = "book_status")
     private BookStatus bookStatus;
@@ -43,6 +42,7 @@ public class Reserve {
         LocalDate currentDate = LocalDate.now();
         reservationDate = Date.valueOf(currentDate);
         reservationStatus = ReservationStatus.Reserved;
+        bookStatus = BookStatus.Borrowed;
     }
     public Reserve(){
 
@@ -100,5 +100,9 @@ public class Reserve {
 
     public void setBookStatus(BookStatus bookStatus) {
         this.bookStatus = bookStatus;
+    }
+
+    public BookStatus getBookStatus() {
+        return bookStatus;
     }
 }

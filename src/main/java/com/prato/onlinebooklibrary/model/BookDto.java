@@ -1,5 +1,7 @@
 package com.prato.onlinebooklibrary.model;
 
+import java.util.Objects;
+
 public class BookDto {
     private Integer bookId;
     private String title;
@@ -46,5 +48,17 @@ public class BookDto {
 
     public void setIsbn(String isbn) {
         this.isbn = isbn;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BookDto bookDto = (BookDto) o;
+        return Objects.equals(bookId, bookDto.bookId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bookId);
     }
 }
