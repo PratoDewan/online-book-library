@@ -4,7 +4,8 @@ public class ResponseDto {
     private Integer userId;
     private String email;
     private String AccessToken;
-    public ResponseDto(){
+
+    public ResponseDto() {
 
     }
 

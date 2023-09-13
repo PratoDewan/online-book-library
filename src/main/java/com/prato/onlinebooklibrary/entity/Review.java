@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Date;
 
 @Entity
-@Table(name="Review")
+@Table(name = "Review")
 @Component
 public class Review {
     @Id
@@ -29,7 +29,8 @@ public class Review {
     private Float rating;
     @Column(name = "comment")
     private String comment;
-    public Review(){
+
+    public Review() {
 
     }
 

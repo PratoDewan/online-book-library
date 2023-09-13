@@ -1,6 +1,6 @@
 package com.prato.onlinebooklibrary.controller;
 
-import com.prato.onlinebooklibrary.service.UserOnlyService;
+import com.prato.onlinebooklibrary.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,27 +8,31 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/books/{bookId}")
-public class BorrowController {
+public class BorrowReserveController {
     @Autowired
-    private UserOnlyService userService;
+    private UserService userService;
+
     @PostMapping("/borrow")
-    public ResponseEntity<String> borrowBook(@PathVariable int bookId,@RequestParam int userId){
-        userService.borrowBook(userId, bookId);
+    public ResponseEntity<String> borrowBook(@PathVariable int bookId) {
+        userService.borrowBook(bookId);
         return new ResponseEntity<>("Successfully borrowed!", HttpStatus.OK);
     }
+
     @PutMapping("/return")
-    public ResponseEntity<String> returnBorrowedBook(@PathVariable int bookId, @RequestParam int userId){
-        userService.returnBook(userId,bookId);
+    public ResponseEntity<String> returnBorrowedBook(@PathVariable int bookId) {
+        userService.returnBook(bookId);
         return new ResponseEntity<>("Book returned successfully!", HttpStatus.OK);
     }
+
     @PostMapping("/reserve")
-    public ResponseEntity<String> reserveBook(@PathVariable int bookId, @RequestParam int userId) {
-        userService.createReservation(userId, bookId);
+    public ResponseEntity<String> reserveBook(@PathVariable int bookId) {
+        userService.createReservation(bookId);
         return new ResponseEntity<>("Book reserved successfully!", HttpStatus.OK);
     }
+
     @PutMapping("/cancel-reservation")
-    public ResponseEntity<String> cancelBookReservation(@PathVariable int bookId, @RequestParam int userId) {
-        userService.cancelReservation(userId, bookId);
+    public ResponseEntity<String> cancelBookReservation(@PathVariable int bookId) {
+        userService.cancelReservation(bookId);
         return new ResponseEntity<>("Book reservation cancelled successfully!", HttpStatus.OK);
     }
 }

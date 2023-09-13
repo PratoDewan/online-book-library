@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prato.onlinebooklibrary.SpringApplicationContext;
 import com.prato.onlinebooklibrary.model.UserDto;
 import com.prato.onlinebooklibrary.model.UserLoginRequestModel;
-import com.prato.onlinebooklibrary.service.UserOnlyService;
-import com.prato.onlinebooklibrary.service.UserService;
+import com.prato.onlinebooklibrary.service.UserAuthService;
 import com.prato.onlinebooklibrary.utils.JWTUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,25 +23,36 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager){
-        this.authenticationManager=authenticationManager;
+
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
         setFilterProcessesUrl("/user/login");
     }
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
             UserLoginRequestModel creds = new ObjectMapper().readValue(request.getInputStream(), UserLoginRequestModel.class);
             return authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(creds.getEmail(),creds.getPassword())
+                    new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword())
             );
-        } catch (IOException | InternalAuthenticationServiceException e) {
-//            log.info("Exception occurred at attemptAuthentication method: {}", e.getLocalizedMessage());
+        } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             try {
                 response.getWriter().write("Authentication failed: Please provide proper input data!");
+                response.getWriter().flush();
+            } catch (IOException ex) {
+                return null;
+            }
+            return null;
+        } catch (InternalAuthenticationServiceException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            try {
+                response.getWriter().write("Authentication failed: Email or password is incorrect!");
                 response.getWriter().flush();
             } catch (IOException ex) {
                 return null;
@@ -53,12 +63,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        String user = ((User)authResult.getPrincipal()).getUsername();
+        String user = ((User) authResult.getPrincipal()).getUsername();
         String accessToken = JWTUtils.generateToken(user);
-        UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
+        UserAuthService userService = (UserAuthService) SpringApplicationContext.getBean("userAuthServiceImpl");
         UserDto userDto = userService.getUser(user);
-//        response.addHeader("userId",userDto.getUserId());
-//        response.addHeader(AppConstants.HEADER_STRING,AppConstants.TOKEN_PREFIX+accessToken);
+
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("userId", userDto.getUserId());
         responseBody.put("accessToken", accessToken);
@@ -70,6 +79,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();
     }
+
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                               AuthenticationException failed) throws IOException {

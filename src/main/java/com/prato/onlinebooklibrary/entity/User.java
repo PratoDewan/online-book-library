@@ -3,20 +3,21 @@ package com.prato.onlinebooklibrary.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import org.springframework.stereotype.Component;
 
 @Entity
-@Table(name="User")
+@Table(name = "User")
 @Component
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Integer userId;
-    @Column(name = "first_name",nullable = false)
+    @Column(name = "first_name", nullable = false)
     @NotEmpty
     private String firstName;
-    @Column(name = "last_name",nullable = false)
+    @Column(name = "last_name", nullable = false)
     @NotEmpty
     private String lastName;
     @Column(name = "email", nullable = false, unique = true)
@@ -29,14 +30,17 @@ public class User {
     @Column(name = "address", nullable = false)
     @NotEmpty
     private String address;
+
     public enum Role {
         CUSTOMER,
         ADMIN
     }
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
-    public User(){
+
+    public User() {
 
     }
 
@@ -46,7 +50,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.address = address;
-        this.role=role;
+        this.role = role;
     }
 
     public Integer getUserId() {

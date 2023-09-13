@@ -1,22 +1,26 @@
 package com.prato.onlinebooklibrary.model;
 
+import com.prato.onlinebooklibrary.entity.Book;
+
 import java.util.Objects;
 
-public class BookDto {
+public class BookAdminResponseDto {
     private Integer bookId;
     private String title;
     private String author;
     private String isbn;
+    private Book.Status status;
 
-    public BookDto() {
+    public BookAdminResponseDto() {
 
     }
 
-    public BookDto(Integer bookId, String title, String author, String isbn) {
+    public BookAdminResponseDto(Integer bookId, String title, String author, String isbn, Book.Status status) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
         this.isbn = isbn;
+        this.status = status;
     }
 
     public Integer getBookId() {
@@ -51,11 +55,19 @@ public class BookDto {
         this.isbn = isbn;
     }
 
+    public Book.Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Book.Status status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BookDto bookDto = (BookDto) o;
+        BookAdminResponseDto bookDto = (BookAdminResponseDto) o;
         return Objects.equals(bookId, bookDto.bookId);
     }
 

@@ -1,30 +1,49 @@
 package com.prato.onlinebooklibrary.controller;
 
+import com.prato.onlinebooklibrary.entity.Borrowed;
 import com.prato.onlinebooklibrary.entity.User;
-import com.prato.onlinebooklibrary.model.ResponseDto;
-import com.prato.onlinebooklibrary.model.UserDto;
-import com.prato.onlinebooklibrary.service.UserOnlyService;
+import com.prato.onlinebooklibrary.service.AdminService;
+import com.prato.onlinebooklibrary.service.CommonService;
 import com.prato.onlinebooklibrary.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users/{userId}")
 public class UserController {
     @Autowired
-    private UserOnlyService userOnlyService;
+    private AdminService adminService;
+    @Autowired
+    private CommonService commonService;
     @Autowired
     private UserService userService;
-    @GetMapping("/all")
-    public ResponseEntity<List<User>> registerUser(){
-        return new ResponseEntity<>(userOnlyService.getAllUser(), HttpStatus.OK);
+
+    @GetMapping("")
+    public ResponseEntity<Optional<User>> findById(@PathVariable int userId) {
+        return new ResponseEntity<>(adminService.getUserById(userId), HttpStatus.OK);
     }
-    @PostMapping("/register")
-    public ResponseEntity<ResponseDto> registerUser(@RequestBody UserDto userDto) throws Exception {
-        return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);
+
+    @GetMapping("/books")
+    public ResponseEntity<Set<?>> findBorrowedBooksByUser(@PathVariable int userId) {
+        return new ResponseEntity<>(commonService.borrowedBooksByUser(userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/borrowed-books")
+    public ResponseEntity<Set<?>> findCurrentBorrowedBooksByUser(@PathVariable int userId) {
+        return new ResponseEntity<>(commonService.currentlyBorrowedBooks(userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<List<Borrowed>> findUserHistory(@PathVariable int userId) {
+        return new ResponseEntity<>(userService.borrowHistory(userId), HttpStatus.OK);
     }
 }
